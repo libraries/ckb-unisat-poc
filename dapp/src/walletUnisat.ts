@@ -1,7 +1,8 @@
 import { blockchain } from '@ckb-lumos/base';
 import { bytes } from '@ckb-lumos/codec';
 import { BI, DepType, Hash, HashType, RPC, Script, Transaction, config, helpers, utils } from '@ckb-lumos/lumos';
-import { bech32 } from 'bech32';
+import { bech32, bech32m } from 'bech32';
+import * as bitcoinjs from "bitcoinjs-lib";
 import * as bs58 from 'bs58';
 
 
@@ -10,22 +11,22 @@ export const conf = {
     url: 'https://testnet.ckb.dev',
     script: {
         auth: {
-            codeHash: '0xd58efac8d054943e3db319e20ca74c9861c479208969813f3dc7811a776af9f9',
+            codeHash: '0x55ef3361a3843cc82d91ad56a1fd125a8228933fa7ac2d52b861c80f224f2a79',
             hashType: 'data1' as HashType,
             cellCep: {
                 outPoint: {
-                    txHash: '0xd4f72f0504373ff8effadf44f92c46a0062774fb585ebcacc24eb47b98e2d66a',
+                    txHash: '0xb0f833d39195dc940daff51075431feddca76364dae1046629893a657336f752',
                     index: '0x0',
                 },
                 depType: 'code' as DepType,
             }
         },
         lock: {
-            codeHash: '0xd7aac16927b2d572b3803c1f68e49d082d3acc2af2614c9be752ff9cec5dc3ea',
+            codeHash: '0x90c3e086a196dc89bcb85ab6ea9b7f92335ed45e90482663fef4248689c2adca',
             hashType: 'data1' as HashType,
             cellCep: {
                 outPoint: {
-                    txHash: '0xe842b43df31c92d448fa345d60a6df3e03aaab19ef88921654bf95c673a26872',
+                    txHash: '0x5119bb4e34628a9f709947ef0b7d7086d94f0f33e2f1e0ca66b24fda5304eab1',
                     index: '0x0',
                 },
                 depType: 'code' as DepType,
@@ -52,6 +53,11 @@ export function walletUnisat(addr: string): WalletUnisat {
     if (addr.startsWith('3')) {
         // NestedSegwit
         args += bytes.hexify(bs58.decode(addr).slice(1, 21)).slice(2)
+    }
+    if (addr.startsWith('bc1p')) {
+        // Taproot
+        let xval = Buffer.from(bech32m.fromWords(bech32m.decode(addr).words.slice(1)))
+        args += bitcoinjs.crypto.hash160(xval).toString('hex')
     }
     if (addr.startsWith('1')) {
         // Legacy
@@ -90,6 +96,9 @@ export function walletUnisat(addr: string): WalletUnisat {
             }
             if (addr.startsWith('3')) {
                 sign[0] = 35 + (sign[0] - 27) % 4
+            }
+            if (addr.startsWith('bc1p')) {
+                sign[0] = 23 + (sign[0] - 27) % 4
             }
             if (addr.startsWith('1')) {
                 sign[0] = 31 + (sign[0] - 27) % 4

@@ -20,8 +20,8 @@ async function main() {
         bobAddrBTC = '3Fq9p6D8xptidAhSrgWJscdfCDbkS1CyJ8'
     }
     if (options.addressType == 'p2tr') {
-        adaAddrBTC = 'bc1qf5mc6jm6g75p5xxg4cg4ljp39jhn3acxau82w3'
-        bobAddrBTC = 'bc1qq3k4d8ejp6rnh7jshsude0kkrdutu27ad43m8r'
+        adaAddrBTC = 'bc1ptty9z984zhagw5c6qegfykjp8lvakwqwr39p3fs3fnzdmd7pmnpq55zgny'
+        bobAddrBTC = 'bc1p76fa25lp3latfssexyhl604kv6f3cz9h4rrsmk92wfr7j7zk572sdfsn07'
     }
     if (options.addressType == 'p2pkh') {
         adaAddrBTC = '1DZrVYP7wmygHtKgbybD39MVkGSwZ581fq'

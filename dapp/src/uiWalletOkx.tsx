@@ -1,7 +1,5 @@
 import { bytes } from '@ckb-lumos/codec';
 import { BI, Hash } from '@ckb-lumos/lumos';
-import { bech32 } from 'bech32';
-import * as bitcoinjs from "bitcoinjs-lib";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { walletOkx, walletOkxCapacity, walletOkxTransfer } from "./walletOkx";
@@ -38,6 +36,9 @@ export function App() {
       if (varAdaAddrBTC.startsWith('3')) {
         setAdaAddrType('Nested Segwit (P2SH-P2WPKH)')
       }
+      if (varAdaAddrBTC.startsWith('bc1p')) {
+        setAdaAddrType('Taproot (P2TR)')
+      }
       if (varAdaAddrBTC.startsWith('1')) {
         setAdaAddrType('Legacy (P2PKH)')
       }
@@ -58,6 +59,9 @@ export function App() {
       if (varBobAddrBTC.startsWith('3')) {
         setBobAddrType('Nested Segwit (P2SH-P2WPKH)')
       }
+      if (varBobAddrBTC.startsWith('bc1p')) {
+        setBobAddrType('Taproot (P2TR)')
+      }
       if (varBobAddrBTC.startsWith('1')) {
         setBobAddrType('Legacy (P2PKH)')
       }
@@ -74,16 +78,7 @@ export function App() {
       await new Promise((resolve) => setTimeout(resolve, 100))
       const user = await window.okxwallet.bitcoin.connect();
       const addr = user.address
-      if (addr.startsWith('bc1p')) {
-        // Taproot
-        let pubkeyString = user.compressedPublicKey
-        let pubkeyHash = bitcoinjs.crypto.hash160(Buffer.from(pubkeyString, 'hex'));
-        let pubkeyWord = bech32.toWords(pubkeyHash)
-        pubkeyWord.unshift(0)
-        setAdaAddrBTC(bech32.encode('bc', pubkeyWord))
-      } else {
-        setAdaAddrBTC(addr)
-      }
+      setAdaAddrBTC(addr)
       setBobAddrBTC('bc1qlqve6tdx30j7xsmuappwc5pfh7nml3anxugjke')
     };
     f()
@@ -101,6 +96,9 @@ export function App() {
       }
       if (ada.addr.btc.startsWith('3')) {
         sign[0] = 35 + (sign[0] - 27) % 4
+      }
+      if (ada.addr.btc.startsWith('bc1p')) {
+        sign[0] = 23 + (sign[0] - 27) % 4
       }
       if (ada.addr.btc.startsWith('1')) {
         sign[0] = 31 + (sign[0] - 27) % 4
